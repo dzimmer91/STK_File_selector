@@ -74,12 +74,12 @@ namespace STK_File_selector
             public int 
                 misnum, 
                 cod_id,
+                centerbody,
                 used;
             public string
                 name,
                 epoch,
                 epoch_time,
-                centerbody,
                 efilename;
             public double
                 sma,
@@ -610,7 +610,7 @@ namespace STK_File_selector
                         orbitdata[pos].name = items[1]; // missions[i];
                         orbitdata[pos].epoch = items[2]; // epochs[i];
                         orbitdata[pos].epoch_time = items[3]; // epoch_times[i];
-                        orbitdata[pos].centerbody = items[4]; //centerbodys[i];
+                       // orbitdata[pos].centerbody = items[4]; //centerbodys[i];
                         orbitdata[pos].sma = double.Parse(items[7], format);
                         orbitdata[pos].ecc = double.Parse(items[8], format);
                         orbitdata[pos].inc = double.Parse(items[9], format);
@@ -657,14 +657,15 @@ namespace STK_File_selector
 
 
         unsafe struct CMWriteStr
-        {
+        {//TODO should be moved to top
             //create struct to decode bin file from NPAS
+            //byte is used instead of char because char size is 2 in UTF-16
             public int misnum;
             public fixed byte misname[20];
-            public fixed byte epoch_ddmmyyyy[10];
-            public fixed byte epoch_hhmmsss[10];
-            public fixed byte start_ddmmyyyy[10];
-            public fixed byte start_hhmmsss[10];
+            public fixed byte epoch_ddmmyyyy[11];
+            public fixed byte epoch_hhmmsss[13];
+            public fixed byte start_ddmmyyyy[11];
+            public fixed byte start_hhmmsss[13];
             public int endopt;
             public int epbod;
             public int epcor;
@@ -680,6 +681,7 @@ namespace STK_File_selector
 
         };
 
+        //this function coverts the bytes into the biniary structure 
         public unsafe static CMWriteStr ByteToType<CMWriteStr>(BinaryReader reader, int *rtn, int size)
         {
             
@@ -700,22 +702,23 @@ namespace STK_File_selector
         public unsafe void load_orbit_file()
         {
 
-            orbitmissioncount = numberoflines(NPAS_Orbit_File);
-            orbitdata = new orbit_str[orbitmissioncount];
-            //string[] missionnumbers = new string[orbitmissioncount];
-            //char test = Encoding.UTF8;
-            Console.Write("sizof struct=" + sizeof(CMWriteStr) + " sizeof(int)=" + sizeof(int) + " sizeof(double)=" + sizeof(double) + "\n");
-            Console.Write(" sizeof(char)=" + sizeof(char) +  "\n");
+
             var format = new NumberFormatInfo();
             format.NegativeSign = "-";
             format.NumberDecimalSeparator = ".";
             CMWriteStr data;
 
             FileStream reader = File.Open(NPAS_Orbit_File, FileMode.Open, FileAccess.Read);
-            
+
+            //compute the number of structs in the file
+            orbitmissioncount = (int)(reader.Length / sizeof(CMWriteStr));
+            Console.Write("orbit_count=" + orbitmissioncount + "\n");
+            orbitdata = new orbit_str[orbitmissioncount];
+
             BinaryReader breader = new BinaryReader(reader);
             
-            int rtnval = 0;
+            int rtnval = 0,
+                miscount = 0;
             do
             {
                 data = ByteToType<CMWriteStr>(breader, &rtnval,sizeof(CMWriteStr));
@@ -723,11 +726,13 @@ namespace STK_File_selector
                 int misnamesize = 0;
                 for (misnamesize = 0; misnamesize < 20 && data.misname[misnamesize] != 0; misnamesize++) ;
                 
+                //setup local vars to convert bytes to char array;
                 char[] misname = new char[misnamesize];
                 char[] epoch_ddmmyyyy = new char[10];
-                char[] epoch_hhmmsss = new char[10];
+                char[] epoch_hhmmsss = new char[12];
                 char[] start_ddmmyyyy = new char[10];
-                char[] start_hhmmsss = new char[10];
+                char[] start_hhmmsss = new char[12];
+                //loop though bytes converting to char[]
                 for (int i=0; i<20;i++)
                 {
 
@@ -739,7 +744,23 @@ namespace STK_File_selector
                     }
                     else misname[i] = '\0';
 
-                    if(i<10)
+                    if(i < 12)
+                    {
+                
+                        if (data.epoch_hhmmsss[i] != 0)
+                        {
+                            epoch_hhmmsss[i] = Convert.ToChar(data.epoch_hhmmsss[i]);
+
+                        }else epoch_hhmmsss[i] = '\0';
+                        
+                        if (data.start_hhmmsss[i] != 0)
+                        {
+                            start_hhmmsss[i] = Convert.ToChar(data.start_hhmmsss[i]);
+
+                        }
+                        else start_hhmmsss[i] = '\0';
+                    }
+                    if (i < 10)
                     {
                         if (data.epoch_ddmmyyyy[i] != 0)
                         {
@@ -748,24 +769,14 @@ namespace STK_File_selector
                         }
                         else epoch_ddmmyyyy[i] = '\0';
 
-                        if (data.epoch_hhmmsss[i] != 0)
-                        {
-                            epoch_hhmmsss[i] = Convert.ToChar(data.epoch_hhmmsss[i]);
 
-                        }else epoch_ddmmyyyy[i] = '\0';
                         if (data.start_ddmmyyyy[i] != 0)
                         {
                             start_ddmmyyyy[i] = Convert.ToChar(data.start_ddmmyyyy[i]);
 
                         }
                         else start_ddmmyyyy[i] = '\0';
-
-                        if (data.start_hhmmsss[i] != 0)
-                        {
-                            start_hhmmsss[i] = Convert.ToChar(data.start_hhmmsss[i]);
-
-                        }
-                        else start_hhmmsss[i] = '\0';
+                       
                     }
                 }
                 string newmisname = new string(misname); // Convert.ToString()
@@ -774,8 +785,31 @@ namespace STK_File_selector
                 string newstart_ddmmyyyy = new string(start_ddmmyyyy); // Convert.ToString()
                 string newstart_hhmmsss = new string(start_hhmmsss); // Convert.ToString()
 
+                Console.Write("miscount=" + miscount + "\n");
+
+                orbitdata[miscount].misnum = data.misnum;
+                orbitdata[miscount].name = newmisname;
+                orbitdata[miscount].epoch = newepoch_ddmmyyyy;
+                orbitdata[miscount].epoch_time = newepoch_hhmmsss;
+                orbitdata[miscount].centerbody = data.epbod;
+                orbitdata[miscount].sma = data.epel_01;
+                orbitdata[miscount].ecc = data.epel_02;
+                orbitdata[miscount].inc = data.epel_03;
+                orbitdata[miscount].raan = data.epel_04; 
+                orbitdata[miscount].aop = data.epel_05;
+                orbitdata[miscount].ma = data.epel_06;
+                orbitdata[miscount].cod_id = data.cod_id;
+                orbitdata[miscount].efileused = false;
+                if (orbitdata[miscount].misnum == orbitdata[miscount].cod_id)
+                {
+                    Console.Write("mission number == cod_id\n");
+                    missionindex[orbitdata[miscount].misnum] = orbitdata[miscount].name;
+                }
+
+                ++miscount;
+
                 Console.Write("\n misnum=" + data.misnum + " misname=" + newmisname + " epoch_ddmmyyyy=" + newepoch_ddmmyyyy + " newepoch_hhmmsss=" + newepoch_hhmmsss + " cod_id =" + data.cod_id + "\n");
-            } while (rtnval != -1);
+            } while (rtnval != -1 && miscount < orbitmissioncount);
             reader.Close();
 
         }
@@ -1011,11 +1045,11 @@ namespace STK_File_selector
                     Console.Write(orbitdata[i].sma + " " + orbitdata[i].ecc + " " + orbitdata[i].inc + " " + orbitdata[i].raan + " " + orbitdata[i].aop + " " + orbitdata[i].ma + "\n");
 
                     string centerbodyname;
-                    if (int.Parse(orbitdata[i].centerbody) == 1)
+                    if (orbitdata[i].centerbody == 1)
                     {
                         centerbodyname = "Earth";
                     }
-                    else if (int.Parse(orbitdata[i].centerbody) == 2)
+                    else if (orbitdata[i].centerbody == 2)
                     {
                         centerbodyname = "Moon";
                     }
@@ -1077,7 +1111,7 @@ namespace STK_File_selector
 
                     //hpop.ForceModel.EclipsingBodies.AssignEclipsingBody( centerbodyname);
                     //check the centerbody of the provided orbit data;
-                    if (int.Parse(orbitdata[i].centerbody) == 1)
+                    if (orbitdata[i].centerbody == 1)
                     {// centerbody == EARTH
                         Console.Write("centerbody2[i]) == 1 \n");
                         Console.Write("\n Centralbodyfile=" + hpop.ForceModel.CentralBodyGravity.File + "\n");
@@ -1085,7 +1119,7 @@ namespace STK_File_selector
                         hpop.ForceModel.Drag.Use = false;
                         hpop.ForceModel.SolarRadiationPressure.Use = false;
                     }
-                    else if (int.Parse(orbitdata[i].centerbody) == 2)
+                    else if (orbitdata[i].centerbody == 2)
                     {//CenterBody == Moon
                         Console.Write("centerbody2[i]) == 2 \n");
                         hpop.ForceModel.Drag.Use = false;
@@ -1099,15 +1133,18 @@ namespace STK_File_selector
                     //hpop.InitialState.Representation.Assign(orbit);
                     Console.Write("epochtime = " + epochDT.ToString("dd MMM yyyy") + orbitdata[i].epoch_time + "\n");
                     hpop.InitialState.Representation.Epoch = ( epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time );
-                    hpop.EphemerisInterval.SetStartAndStopTimes((epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time), (epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time));
+                    //TODO need to add start time and duration or end time depending what is slected in the coverage model
+                   // hpop.EphemerisInterval.SetStartAndStopTimes((epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time), (epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time));
                     hpop.InitialState.Representation.AssignClassical(AgECoordinateSystem.eCoordinateSystemJ2000, orbitdata[i].sma , orbitdata[i].ecc, orbitdata[i].inc, orbitdata[i].aop, orbitdata[i].raan, orbitdata[i].ma);
                    
                     hpop.Propagate();
-                    if (int.Parse(orbitdata[i].centerbody) == 1)
+                    if (orbitdata[i].centerbody == 1)
                     {
                       //  hpop.InitialState.Representation.Assign(hpop.InitialState.Representation.ConvertTo(AgEOrbitStateType.eOrbitStateCartesian));
                       
                        // m_oApplication.
+                       /*
+
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
 
                         int numEpSec = 1;
@@ -1157,6 +1194,8 @@ namespace STK_File_selector
 
                         //TODO need to find command to change coordinate system to fixed 
                         hpop.Propagate();
+
+                        */
                     }
 
                     orbitdata[i].Missensor = generate_sensor(orbitdata[i].name, "Stations");
