@@ -75,11 +75,17 @@ namespace STK_File_selector
                 misnum, 
                 cod_id,
                 centerbody,
+                endopt,
                 used;
             public string
                 name,
                 epoch,
                 epoch_time,
+                start_date,
+                start_time,
+                end_date,
+                end_time,
+                duration,
                 efilename;
             public double
                 sma,
@@ -791,6 +797,9 @@ namespace STK_File_selector
                 orbitdata[miscount].name = newmisname;
                 orbitdata[miscount].epoch = newepoch_ddmmyyyy;
                 orbitdata[miscount].epoch_time = newepoch_hhmmsss;
+                orbitdata[miscount].start_date = newstart_ddmmyyyy;
+                orbitdata[miscount].start_time = newstart_hhmmsss;
+                orbitdata[miscount].endopt = data.endopt;
                 orbitdata[miscount].centerbody = data.epbod;
                 orbitdata[miscount].sma = data.epel_01;
                 orbitdata[miscount].ecc = data.epel_02;
