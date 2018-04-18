@@ -1,0 +1,17 @@
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\STK_File_selector.exe.config
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\STK_File_selector.exe
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\STK_File_selector.pdb
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.STKObjects.Interop.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.STKUtil.Interop.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.STKVgt.Interop.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.Ui.Application.Interop.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.Ui.Core.Interop.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\stdole.dll
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.NPAS_to_STK.resources
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.Properties.Resources.resources
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.csproj.GenerateResource.Cache
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.csproj.CoreCompileInputs.cache
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.exe
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.pdb
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\bin\Release\AGI.STKVgt.Interop.xml
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Release\STK_File_selector.csprojResolveAssemblyReference.cache
