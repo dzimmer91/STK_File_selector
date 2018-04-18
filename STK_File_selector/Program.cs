@@ -658,7 +658,7 @@ namespace STK_File_selector
 
         unsafe struct CMWriteStr
         {
-            
+            //create struct to decode bin file from NPAS
             public int misnum;
             public fixed byte misname[20];
             public fixed byte epoch_ddmmyyyy[10];
