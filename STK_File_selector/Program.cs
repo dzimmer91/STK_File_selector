@@ -705,6 +705,7 @@ namespace STK_File_selector
                 return theStructure;
         }
 
+        //TODO need to add eFile processing to both this function and the struct
         public unsafe void load_orbit_file()
         {
 
@@ -714,21 +715,26 @@ namespace STK_File_selector
             format.NumberDecimalSeparator = ".";
             CMWriteStr data;
 
+            //open the selected file
             FileStream reader = File.Open(NPAS_Orbit_File, FileMode.Open, FileAccess.Read);
 
             //compute the number of structs in the file
             orbitmissioncount = (int)(reader.Length / sizeof(CMWriteStr));
             Console.Write("orbit_count=" + orbitmissioncount + "\n");
+            //allocate the number of missions that are in the file
             orbitdata = new orbit_str[orbitmissioncount];
-
+            //setup the bin reader 
             BinaryReader breader = new BinaryReader(reader);
-            
+            //rtnval is set to -1 if no data or invalid data is return???
             int rtnval = 0,
                 miscount = 0;
             do
             {
+                //convert the bytes read to the struct data
                 data = ByteToType<CMWriteStr>(breader, &rtnval,sizeof(CMWriteStr));
+                //TODO should check if data stuct is valid and the correct file is used
 
+                //find the size of the mission name so misname isn't over alloced causeing ????? after text.....
                 int misnamesize = 0;
                 for (misnamesize = 0; misnamesize < 20 && data.misname[misnamesize] != 0; misnamesize++) ;
                 
@@ -797,9 +803,13 @@ namespace STK_File_selector
                 orbitdata[miscount].name = newmisname;
                 orbitdata[miscount].epoch = newepoch_ddmmyyyy;
                 orbitdata[miscount].epoch_time = newepoch_hhmmsss;
+                //set the start time from MIB1
                 orbitdata[miscount].start_date = newstart_ddmmyyyy;
                 orbitdata[miscount].start_time = newstart_hhmmsss;
+                //set the end option
                 orbitdata[miscount].endopt = data.endopt;
+                //TODO need to check on the end option and process the end date or the duration;
+
                 orbitdata[miscount].centerbody = data.epbod;
                 orbitdata[miscount].sma = data.epel_01;
                 orbitdata[miscount].ecc = data.epel_02;
@@ -809,6 +819,7 @@ namespace STK_File_selector
                 orbitdata[miscount].ma = data.epel_06;
                 orbitdata[miscount].cod_id = data.cod_id;
                 orbitdata[miscount].efileused = false;
+
                 if (orbitdata[miscount].misnum == orbitdata[miscount].cod_id)
                 {
                     Console.Write("mission number == cod_id\n");
