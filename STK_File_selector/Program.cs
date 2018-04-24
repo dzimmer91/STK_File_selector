@@ -76,6 +76,7 @@ namespace STK_File_selector
                 cod_id,
                 centerbody,
                 endopt,
+                duration,
                 used;
             public string
                 name,
@@ -85,7 +86,6 @@ namespace STK_File_selector
                 start_time,
                 end_date,
                 end_time,
-                duration,
                 efilename;
             public double
                 sma,
@@ -664,26 +664,37 @@ namespace STK_File_selector
 
         unsafe struct CMWriteStr
         {//TODO should be moved to top
-            //create struct to decode bin file from NPAS
-            //byte is used instead of char because char size is 2 in UTF-16
+         //create struct to decode bin file from NPAS
+         //byte is used instead of char because char size is 2 in UTF-16
+
+
             public int misnum;
             public fixed byte misname[20];
             public fixed byte epoch_ddmmyyyy[11];
             public fixed byte epoch_hhmmsss[13];
             public fixed byte start_ddmmyyyy[11];
             public fixed byte start_hhmmsss[13];
-            public int endopt;
-            public int epbod;
-            public int epcor;
-            public int epelm;
-            public double epel_01;
-            public double epel_02;
-            public double epel_03;
-            public double epel_04;
-            public double epel_05;
-            public double epel_06;
-            public int cod_id;
 
+            public fixed byte end_ddmmyyyy[11];
+            public fixed byte end_hhmmsss[13];
+
+            public int efile_opt;
+            public fixed byte efile_name[200];
+
+            public int duration;
+
+            public int endopt;
+            public int epbod,
+                epcor,
+                epelm;
+
+            public double epel_01,
+                   epel_02,
+                   epel_03,
+                   epel_04,
+                   epel_05,
+                   epel_06;
+            public int cod_id;
 
         };
 
@@ -777,7 +788,6 @@ namespace STK_File_selector
                         if (data.epoch_ddmmyyyy[i] != 0)
                         {
                             epoch_ddmmyyyy[i] = Convert.ToChar(data.epoch_ddmmyyyy[i]);
-
                         }
                         else epoch_ddmmyyyy[i] = '\0';
 
@@ -785,15 +795,12 @@ namespace STK_File_selector
                         if (data.start_ddmmyyyy[i] != 0)
                         {
                             start_ddmmyyyy[i] = Convert.ToChar(data.start_ddmmyyyy[i]);
-
                         }
                         else start_ddmmyyyy[i] = '\0';
-                       
                     }
                 }
                 string newmisname = new string(misname); // Convert.ToString()
-                string newepoch_ddmmyyyy = new string(epoch_ddmmyyyy); // Convert.ToString()
-                string newepoch_hhmmsss = new string(epoch_hhmmsss); // Convert.ToString()
+                
                 string newstart_ddmmyyyy = new string(start_ddmmyyyy); // Convert.ToString()
                 string newstart_hhmmsss = new string(start_hhmmsss); // Convert.ToString()
 
@@ -801,34 +808,79 @@ namespace STK_File_selector
 
                 orbitdata[miscount].misnum = data.misnum;
                 orbitdata[miscount].name = newmisname;
-                orbitdata[miscount].epoch = newepoch_ddmmyyyy;
-                orbitdata[miscount].epoch_time = newepoch_hhmmsss;
                 //set the start time from MIB1
                 orbitdata[miscount].start_date = newstart_ddmmyyyy;
                 orbitdata[miscount].start_time = newstart_hhmmsss;
                 //set the end option
                 orbitdata[miscount].endopt = data.endopt;
-                //TODO need to check on the end option and process the end date or the duration;
+                if (data.endopt == 0)
+                {
+                    orbitdata[miscount].duration = data.duration;
+                }else
+                {
+                    char[] end_ddmmyyyy = new char[10];
+                    char[] end_hhmmsss = new char[12];
+                    for(int i=0;i<12;i++)
+                    {
+                        if (i < 10)
+                        {
+                            if (data.end_ddmmyyyy[i] != 0)
+                            {
+                                end_ddmmyyyy[i] = Convert.ToChar(data.end_ddmmyyyy[i]);
+                            }
+                            else end_ddmmyyyy[i] = '\0';
+                        }
+                        end_hhmmsss[i] = Convert.ToChar(data.end_hhmmsss[i]);
+                    }
+                    string newend_ddmmyyyy = new string(end_ddmmyyyy); // Convert.ToString()
+                    string newend_hhmmsss = new string(end_hhmmsss); // Convert.ToString()
+                    orbitdata[miscount].end_date = newend_ddmmyyyy;
+                    orbitdata[miscount].end_time = newend_hhmmsss;
 
-                orbitdata[miscount].centerbody = data.epbod;
-                orbitdata[miscount].sma = data.epel_01;
-                orbitdata[miscount].ecc = data.epel_02;
-                orbitdata[miscount].inc = data.epel_03;
-                orbitdata[miscount].raan = data.epel_04; 
-                orbitdata[miscount].aop = data.epel_05;
-                orbitdata[miscount].ma = data.epel_06;
-                orbitdata[miscount].cod_id = data.cod_id;
-                orbitdata[miscount].efileused = false;
+                }
+
+
+                if (data.efile_opt == 0)
+                {//check if an efile was used 0 = not used & 1 = used
+                    string newepoch_ddmmyyyy = new string(epoch_ddmmyyyy); // Convert.ToString()
+                    string newepoch_hhmmsss = new string(epoch_hhmmsss); // Convert.ToString()
+
+                    orbitdata[miscount].epoch = newepoch_ddmmyyyy;
+                    orbitdata[miscount].epoch_time = newepoch_hhmmsss;
+
+
+                    //TODO need to check on the end option and process the end date or the duration;
+
+                    orbitdata[miscount].centerbody = data.epbod;
+                    orbitdata[miscount].sma = data.epel_01;
+                    orbitdata[miscount].ecc = data.epel_02;
+                    orbitdata[miscount].inc = data.epel_03;
+                    orbitdata[miscount].raan = data.epel_04;
+                    orbitdata[miscount].aop = data.epel_05;
+                    orbitdata[miscount].ma = data.epel_06;
+                    orbitdata[miscount].cod_id = data.cod_id;
+                    orbitdata[miscount].efileused = false;
+                }
+                else
+                {
+                    char[] tmpefile_name = new char[200];
+                    for(int i=0;i<200;i++) tmpefile_name[i] = Convert.ToChar(data.efile_name[i]);
+                    string localefilename = new string(tmpefile_name); // Convert.ToString()
+
+                    orbitdata[miscount].efilename = localefilename;
+                    orbitdata[miscount].efileused = true;
+                }
 
                 if (orbitdata[miscount].misnum == orbitdata[miscount].cod_id)
                 {
                     Console.Write("mission number == cod_id\n");
                     missionindex[orbitdata[miscount].misnum] = orbitdata[miscount].name;
                 }
-
+                Console.Write("\n misnum=" + data.misnum + " misname=" + newmisname + " epoch_ddmmyyyy=" + orbitdata[miscount].epoch + " newepoch_hhmmsss=" +
+                    orbitdata[miscount].epoch_time + " cod_id =" + data.cod_id + "\n");
                 ++miscount;
 
-                Console.Write("\n misnum=" + data.misnum + " misname=" + newmisname + " epoch_ddmmyyyy=" + newepoch_ddmmyyyy + " newepoch_hhmmsss=" + newepoch_hhmmsss + " cod_id =" + data.cod_id + "\n");
+                
             } while (rtnval != -1 && miscount < orbitmissioncount);
             reader.Close();
 
@@ -1121,8 +1173,20 @@ namespace STK_File_selector
                     cmb_epoch += " ";
                     cmb_epoch += orbitdata[i].epoch_time;
                     DateTime epochDT = Convert.ToDateTime(orbitdata[i].epoch);
+                    DateTime startDT = Convert.ToDateTime(orbitdata[i].start_date);
+                    DateTime endDT;
 
-                    
+                    if(orbitdata[i].endopt == 0)
+                    {
+                        endDT = startDT;
+                        endDT = endDT.AddDays((double)orbitdata[i].duration);
+                        orbitdata[i].end_time = orbitdata[i].start_time;
+                    }
+                    else
+                    {
+                        endDT = Convert.ToDateTime(orbitdata[i].end_date);
+                    }
+
 
                     //classical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeRadius;
                     /// IAgClassicalSizeShapeRadius radius = (IAgClassicalSizeShapeRadius)classical.SizeShape;
@@ -1154,7 +1218,7 @@ namespace STK_File_selector
                     Console.Write("epochtime = " + epochDT.ToString("dd MMM yyyy") + orbitdata[i].epoch_time + "\n");
                     hpop.InitialState.Representation.Epoch = ( epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time );
                     //TODO need to add start time and duration or end time depending what is slected in the coverage model
-                   // hpop.EphemerisInterval.SetStartAndStopTimes((epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time), (epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time));
+                    hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
                     hpop.InitialState.Representation.AssignClassical(AgECoordinateSystem.eCoordinateSystemJ2000, orbitdata[i].sma , orbitdata[i].ecc, orbitdata[i].inc, orbitdata[i].aop, orbitdata[i].raan, orbitdata[i].ma);
                    
                     hpop.Propagate();
@@ -1163,7 +1227,7 @@ namespace STK_File_selector
                       //  hpop.InitialState.Representation.Assign(hpop.InitialState.Representation.ConvertTo(AgEOrbitStateType.eOrbitStateCartesian));
                       
                        // m_oApplication.
-                       /*
+                       
 
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
 
@@ -1173,8 +1237,8 @@ namespace STK_File_selector
                         IAgDataProviderGroup dpGroup = sat.DataProviders["Cartesian Position"] as IAgDataProviderGroup;
                         Array elements = new object[] { "x", "y", "z" };
                         IAgDataPrvTimeVar dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
-                        IAgDrResult dpResult = dp.ExecElements(hpop.InitialState.Representation.Epoch, hpop.InitialState.Representation.Epoch, 1, ref elements);
-                        
+                        //IAgDrResult dpResult = dp.ExecElements(hpop.InitialState.Representation.Epoch, hpop.InitialState.Representation.Epoch, 1, ref elements);
+                        IAgDrResult dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
 
 
                         double xICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
@@ -1184,7 +1248,8 @@ namespace STK_File_selector
                         // Get the satellite's ICRF cartesian velocity at 180 EpSec using the data provider interface
                         dpGroup = sat.DataProviders["Cartesian Velocity"] as IAgDataProviderGroup;
                         dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
-                        dpResult = dp.ExecElements(numEpSec, numEpSec, 60, ref elements);
+                        //dpResult = dp.ExecElements(numEpSec, numEpSec, 60, ref elements);
+                        dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
                         double xvelICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
                         double yvelICRF = (double)dpResult.DataSets[1].GetValues().GetValue(0);
                         double zvelICRF = (double)dpResult.DataSets[2].GetValues().GetValue(0);
@@ -1200,7 +1265,9 @@ namespace STK_File_selector
 
                         // Use the TransformWithRate method to transform ICRF to Fixed
                         IAgCrdnAxes axesFixed = sat.Vgt.WellKnownAxes.Earth.Fixed;
-                        IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(numEpSec, axesFixed, vectorICRF, vectorvelICRF);
+                        IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(hpop.InitialState.Epoch, axesFixed, vectorICRF, vectorvelICRF);
+
+                        //IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(numEpSec, axesFixed, vectorICRF, vectorvelICRF);
 
                         // Get the Fixed position and velocity coordinates
                         double xFixed = result.Vector.X;
@@ -1213,9 +1280,7 @@ namespace STK_File_selector
                         hpop.InitialState.Representation.AssignCartesian(AgECoordinateSystem.eCoordinateSystemFixed, xFixed, yFixed, zFixed, xvelFixed, yvelFixed, zvelFixed);
 
                         //TODO need to find command to change coordinate system to fixed 
-                        hpop.Propagate();
-
-                        */
+                        hpop.Propagate();                        
                     }
 
                     orbitdata[i].Missensor = generate_sensor(orbitdata[i].name, "Stations");
