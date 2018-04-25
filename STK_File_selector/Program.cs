@@ -1296,7 +1296,11 @@ namespace STK_File_selector
                         hpop.InitialState.Representation.Epoch = (start.ToString("dd MMM yyyy "));
                         hpop.EphemerisInterval.SetStartAndStopTimes((start.ToString("dd MMM yyyy ")), (stop.ToString("dd MMM yyyy ")));
 
-                        hpop.Propagate();                        
+                        hpop.Propagate();
+
+
+                        //IAgStkGraphicsScene scene;
+
                     }
 
                     orbitdata[i].Missensor = generate_sensor(orbitdata[i].name, "Stations");
