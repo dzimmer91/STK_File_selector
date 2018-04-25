@@ -118,6 +118,53 @@ namespace STK_File_selector
         station_str[] stationdata;
         orbit_str[] orbitdata;
         timeline_str[] tldata;
+
+
+
+        unsafe struct CMWriteStr
+        {//TODO should be moved to top
+         //create struct to decode bin file from NPAS
+         //byte is used instead of char because char size is 2 in UTF-16
+
+
+            public int misnum;
+            public fixed byte misname[20];
+            public fixed byte epoch_ddmmyyyy[11];
+            public fixed byte epoch_hhmmsss[13];
+            public fixed byte start_ddmmyyyy[11];
+            public fixed byte start_hhmmsss[13];
+
+            public fixed byte end_ddmmyyyy[11];
+            public fixed byte end_hhmmsss[13];
+
+            public int efile_opt;
+            public fixed byte efile_name[200];
+
+            public int duration;
+
+            public int endopt;
+            public int epbod,
+                epcor,
+                epelm;
+
+            public double epel_01,
+                   epel_02,
+                   epel_03,
+                   epel_04,
+                   epel_05,
+                   epel_06;
+            public int cod_id;
+
+        };
+
+
+
+
+
+
+
+
+
         #endregion
 
         #region Constructor
@@ -662,41 +709,7 @@ namespace STK_File_selector
 
 
 
-        unsafe struct CMWriteStr
-        {//TODO should be moved to top
-         //create struct to decode bin file from NPAS
-         //byte is used instead of char because char size is 2 in UTF-16
 
-
-            public int misnum;
-            public fixed byte misname[20];
-            public fixed byte epoch_ddmmyyyy[11];
-            public fixed byte epoch_hhmmsss[13];
-            public fixed byte start_ddmmyyyy[11];
-            public fixed byte start_hhmmsss[13];
-
-            public fixed byte end_ddmmyyyy[11];
-            public fixed byte end_hhmmsss[13];
-
-            public int efile_opt;
-            public fixed byte efile_name[200];
-
-            public int duration;
-
-            public int endopt;
-            public int epbod,
-                epcor,
-                epelm;
-
-            public double epel_01,
-                   epel_02,
-                   epel_03,
-                   epel_04,
-                   epel_05,
-                   epel_06;
-            public int cod_id;
-
-        };
 
         //this function coverts the bytes into the biniary structure 
         public unsafe static CMWriteStr ByteToType<CMWriteStr>(BinaryReader reader, int *rtn, int size)
@@ -1217,8 +1230,9 @@ namespace STK_File_selector
                     //hpop.InitialState.Representation.Assign(orbit);
                     Console.Write("epochtime = " + epochDT.ToString("dd MMM yyyy") + orbitdata[i].epoch_time + "\n");
                     hpop.InitialState.Representation.Epoch = ( epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time );
-                    //TODO need to add start time and duration or end time depending what is slected in the coverage model
-                    hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
+                    
+                    hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), startDT.AddDays(1).ToString("dd MMM yyyy "));
+                    //hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
                     hpop.InitialState.Representation.AssignClassical(AgECoordinateSystem.eCoordinateSystemJ2000, orbitdata[i].sma , orbitdata[i].ecc, orbitdata[i].inc, orbitdata[i].aop, orbitdata[i].raan, orbitdata[i].ma);
                    
                     hpop.Propagate();
@@ -1226,19 +1240,14 @@ namespace STK_File_selector
                     {
                       //  hpop.InitialState.Representation.Assign(hpop.InitialState.Representation.ConvertTo(AgEOrbitStateType.eOrbitStateCartesian));
                       
-                       // m_oApplication.
-                       
-
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
-
-                        int numEpSec = 1;
 
                         // Get the satellite's ICRF cartesian position at 180 EpSec using the data provider interface
                         IAgDataProviderGroup dpGroup = sat.DataProviders["Cartesian Position"] as IAgDataProviderGroup;
                         Array elements = new object[] { "x", "y", "z" };
                         IAgDataPrvTimeVar dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
-                        //IAgDrResult dpResult = dp.ExecElements(hpop.InitialState.Representation.Epoch, hpop.InitialState.Representation.Epoch, 1, ref elements);
-                        IAgDrResult dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
+                        //IAgDrResult dpResult = dp.ExecElements(hpop.StartTime, startDT.ToString("dd MMM yyyy HH:mm:sss"), ref elements);
+                        IAgDrResult dpResult = dp.ExecSingleElements(hpop.StartTime, ref elements);
 
 
                         double xICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
@@ -1249,13 +1258,16 @@ namespace STK_File_selector
                         dpGroup = sat.DataProviders["Cartesian Velocity"] as IAgDataProviderGroup;
                         dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
                         //dpResult = dp.ExecElements(numEpSec, numEpSec, 60, ref elements);
-                        dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
+                        //dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
+                        dpResult = dp.ExecSingleElements(hpop.StartTime, ref elements);
+
                         double xvelICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
                         double yvelICRF = (double)dpResult.DataSets[1].GetValues().GetValue(0);
                         double zvelICRF = (double)dpResult.DataSets[2].GetValues().GetValue(0);
 
                         // Create a position vector using the ICRF coordinates
-                        IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.ICRF;
+                        //IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.ICRF;
+                        IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.J2000;
                         IAgCartesian3Vector vectorICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
                         vectorICRF.Set(xICRF, yICRF, zICRF);
 
@@ -1265,9 +1277,7 @@ namespace STK_File_selector
 
                         // Use the TransformWithRate method to transform ICRF to Fixed
                         IAgCrdnAxes axesFixed = sat.Vgt.WellKnownAxes.Earth.Fixed;
-                        IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(hpop.InitialState.Epoch, axesFixed, vectorICRF, vectorvelICRF);
-
-                        //IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(numEpSec, axesFixed, vectorICRF, vectorvelICRF);
+                        IAgCrdnAxesTransformWithRateResult result = axesICRF.TransformWithRate(hpop.StartTime, axesFixed, vectorICRF, vectorvelICRF);
 
                         // Get the Fixed position and velocity coordinates
                         double xFixed = result.Vector.X;
@@ -1279,7 +1289,13 @@ namespace STK_File_selector
 
                         hpop.InitialState.Representation.AssignCartesian(AgECoordinateSystem.eCoordinateSystemFixed, xFixed, yFixed, zFixed, xvelFixed, yvelFixed, zvelFixed);
 
-                        //TODO need to find command to change coordinate system to fixed 
+                        DateTime start, stop;
+                        start = Convert.ToDateTime(startdate);
+                        stop = Convert.ToDateTime(enddate);
+
+                        hpop.InitialState.Representation.Epoch = (start.ToString("dd MMM yyyy "));
+                        hpop.EphemerisInterval.SetStartAndStopTimes((start.ToString("dd MMM yyyy ")), (stop.ToString("dd MMM yyyy ")));
+
                         hpop.Propagate();                        
                     }
 
