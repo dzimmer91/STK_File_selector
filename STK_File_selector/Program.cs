@@ -817,7 +817,7 @@ namespace STK_File_selector
                 string newstart_ddmmyyyy = new string(start_ddmmyyyy); // Convert.ToString()
                 string newstart_hhmmsss = new string(start_hhmmsss); // Convert.ToString()
 
-                Console.Write("miscount=" + miscount + "\n");
+                Console.Write(" miscount=" + miscount + "\n");
 
                 orbitdata[miscount].misnum = data.misnum;
                 orbitdata[miscount].name = newmisname;
@@ -855,6 +855,9 @@ namespace STK_File_selector
 
                 if (data.efile_opt == 0)
                 {//check if an efile was used 0 = not used & 1 = used
+
+                    Console.Write("GTDS COD\n");
+
                     string newepoch_ddmmyyyy = new string(epoch_ddmmyyyy); // Convert.ToString()
                     string newepoch_hhmmsss = new string(epoch_hhmmsss); // Convert.ToString()
 
@@ -876,6 +879,8 @@ namespace STK_File_selector
                 }
                 else
                 {
+                    Console.Write("EFile COD\n");
+
                     char[] tmpefile_name = new char[200];
                     for(int i=0;i<200;i++) tmpefile_name[i] = Convert.ToChar(data.efile_name[i]);
                     string localefilename = new string(tmpefile_name); // Convert.ToString()
@@ -1229,8 +1234,10 @@ namespace STK_File_selector
                     }
                     //hpop.InitialState.Representation.Assign(orbit);
                     Console.Write("epochtime = " + epochDT.ToString("dd MMM yyyy") + orbitdata[i].epoch_time + "\n");
+                    //set the epoch date/time from the orbit bin file
                     hpop.InitialState.Representation.Epoch = ( epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time );
-                    
+
+                    //only proagate the orbit 1 day from the start date/time to get the required data to convert to a Fixed coordnate system
                     hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), startDT.AddDays(1).ToString("dd MMM yyyy "));
                     //hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
                     hpop.InitialState.Representation.AssignClassical(AgECoordinateSystem.eCoordinateSystemJ2000, orbitdata[i].sma , orbitdata[i].ecc, orbitdata[i].inc, orbitdata[i].aop, orbitdata[i].raan, orbitdata[i].ma);
@@ -1238,15 +1245,14 @@ namespace STK_File_selector
                     hpop.Propagate();
                     if (orbitdata[i].centerbody == 1)
                     {
-                      //  hpop.InitialState.Representation.Assign(hpop.InitialState.Representation.ConvertTo(AgEOrbitStateType.eOrbitStateCartesian));
-                      
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
 
                         // Get the satellite's ICRF cartesian position at 180 EpSec using the data provider interface
                         IAgDataProviderGroup dpGroup = sat.DataProviders["Cartesian Position"] as IAgDataProviderGroup;
                         Array elements = new object[] { "x", "y", "z" };
                         IAgDataPrvTimeVar dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
-                        //IAgDrResult dpResult = dp.ExecElements(hpop.StartTime, startDT.ToString("dd MMM yyyy HH:mm:sss"), ref elements);
+
+                        //get the elements at the start date/time of the orbit using in NPAS
                         IAgDrResult dpResult = dp.ExecSingleElements(hpop.StartTime, ref elements);
 
 
@@ -1257,8 +1263,8 @@ namespace STK_File_selector
                         // Get the satellite's ICRF cartesian velocity at 180 EpSec using the data provider interface
                         dpGroup = sat.DataProviders["Cartesian Velocity"] as IAgDataProviderGroup;
                         dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
-                        //dpResult = dp.ExecElements(numEpSec, numEpSec, 60, ref elements);
-                        //dpResult = dp.ExecElements(hpop.StartTime, hpop.StopTime, numEpSec, ref elements);
+
+                        //get the elements at the start date/time of the orbit using in NPAS
                         dpResult = dp.ExecSingleElements(hpop.StartTime, ref elements);
 
                         double xvelICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
@@ -1293,13 +1299,11 @@ namespace STK_File_selector
                         start = Convert.ToDateTime(startdate);
                         stop = Convert.ToDateTime(enddate);
 
+                        //set the epoch and start date/time to the selected scenario date/time
                         hpop.InitialState.Representation.Epoch = (start.ToString("dd MMM yyyy "));
                         hpop.EphemerisInterval.SetStartAndStopTimes((start.ToString("dd MMM yyyy ")), (stop.ToString("dd MMM yyyy ")));
-
+                        //propagate new orbit
                         hpop.Propagate();
-
-
-                        //IAgStkGraphicsScene scene;
 
                     }
 
