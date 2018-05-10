@@ -24,6 +24,43 @@ namespace STK_File_selector
     partial class NPAS_To_STK
     {
 
+
+
+        private int numberoflines(string filename)
+        {
+            int counter = 0;
+
+            StreamReader reader = File.OpenText(filename);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                ++counter;
+            }
+            reader.Close();
+            return counter;
+        }
+        private int numberoflines(string filename, bool stationfile)
+        {
+            int counter = 0;
+
+            StreamReader reader = File.OpenText(filename);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = Regex.Replace(line, @"\s+", " ");
+                string[] items = line.Split();
+                int errorCounter = Regex.Matches(items[0], @"[a-zA-z]").Count;
+                if (errorCounter > 0)
+                {
+                    ++counter;
+                }
+            }
+            reader.Close();
+            return counter;
+        }
+
+
+
         //loads stations and TDRS into the station file #TODO should upgrade to use a configuration file to load TDRSs;
         public void load_Station_File()
         {
@@ -426,6 +463,7 @@ namespace STK_File_selector
                     orbitdata[miscount].ma = data.epel_06;
                     orbitdata[miscount].cod_id = data.cod_id;
                     orbitdata[miscount].efileused = false;
+
                 }
                 else
                 {

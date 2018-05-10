@@ -442,39 +442,6 @@ namespace STK_File_selector
 
         }
 
-        private int numberoflines(string filename)
-        {
-            int counter = 0;
-
-                StreamReader reader = File.OpenText(filename);
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    ++counter;
-                }
-                reader.Close();
-                return counter;
-        }
-        private int numberoflines(string filename, bool stationfile)
-        {
-            int counter = 0;
-
-            StreamReader reader = File.OpenText(filename);
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                line = Regex.Replace(line, @"\s+", " ");
-                string[] items = line.Split();
-                int errorCounter = Regex.Matches(items[0], @"[a-zA-z]").Count;
-                if (errorCounter > 0)
-                {
-                    ++counter;
-                }
-            }
-            reader.Close();
-            return counter;
-        }
-
 
 
         private void AddWaypoint(IAgVeWaypointsCollection waypoints, object Lat, object Lon, double Alt, double Speed, double tr)
@@ -486,50 +453,6 @@ namespace STK_File_selector
             elem.Speed = Speed;
             elem.TurnRadius = tr;
         }
-    
-        public void process_mission_data(CheckedListBox passed)
-        {
-           
-            for(int i=0;i<orbitmissioncount;i++)
-            {
-                
-                bool a = Array.Exists<timeline_str>(tldata, x => x.mis == orbitdata[i].name);
-                if (a == true)
-                {
-                    //orbitdata[i].used = 1;
-                    if (passed.Items.Cast<string>().Any(r => r == orbitdata[i].name))
-                    {
-                        Console.Write("Mission name already exists\n");
-                    }else
-                    {
-                        Console.Write("Mission name doesn't exists\n");
-                        passed.Items.Add(orbitdata[i].name, false);
-                    }
-                }
-            }
-        }
-
-        public void process_station_data(CheckedListBox passed)
-        {
-            for (int i = 0; i < stationcount; i++)
-            {
-                bool a = Array.Exists<timeline_str>(tldata, x => x.sta == stationdata[i].name);
-                if (a == true)
-                {
-                   // orbitdata[i].used = 1;
-                    if (passed.Items.Cast<string>().Any(r => r == stationdata[i].name))
-                    {
-                        Console.Write("Mission name already exists\n");
-                    }
-                    else
-                    {
-                        Console.Write("Mission name doesn't exists\n");
-                        passed.Items.Add(stationdata[i].name, false);
-                    }
-                }
-            }
-        }
-
         //process the checked missions in the checkbox list
         public void process_checklist(CheckedListBox passed, orbit_str[] data)
         {
@@ -763,7 +686,7 @@ namespace STK_File_selector
                     DateTime startDT = Convert.ToDateTime(orbitdata[i].start_date);
                     DateTime endDT;
 
-                    if(orbitdata[i].endopt == 0)
+                    if( orbitdata[i].endopt == 0 )
                     {
                         endDT = startDT;
                         endDT = endDT.AddDays((double)orbitdata[i].duration);
@@ -888,7 +811,7 @@ namespace STK_File_selector
                     orbitdata[i].MisChain = null;
                     Console.Write("Misnum != cod_id && orbitdata[i].used == 1 for " + orbitdata[i].name + "\n");
 
-                }else if (orbitdata[i].used == 1 && orbitdata[i].efileused == true)
+                }else if ( orbitdata[i].used == 1 && orbitdata[i].efileused == true)
                 {
                     TL_file_generator(orbitdata[i].name, missionindex[orbitdata[i].cod_id]);
 
