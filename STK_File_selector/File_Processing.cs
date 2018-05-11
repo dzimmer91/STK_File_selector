@@ -158,13 +158,7 @@ namespace STK_File_selector
             tlcount = numberoflines(NPAS_Timeline_File);
             //StreamReader reader = File.OpenText(NPAS_Timeline_File);
             string line;
-            //while ((line = reader.ReadLine()) != null)
-            //{
-            //    ++tlcount;
-            //}
 
-            //reader.BaseStream.Position = 0;
-            //reader.DiscardBufferedData();
 
             tldata = new timeline_str[tlcount];
             StreamReader reader = File.OpenText(NPAS_Timeline_File);
@@ -296,7 +290,7 @@ namespace STK_File_selector
         }
 
 
-        //this function coverts the bytes into the biniary structure 
+        //this function coverts the bytes into the biniary structure
         public unsafe static CMWriteStr ByteToType<CMWriteStr>(BinaryReader reader, int* rtn, int size)
         {
 
@@ -332,7 +326,7 @@ namespace STK_File_selector
             Console.Write("orbit_count=" + orbitmissioncount + "\n");
             //allocate the number of missions that are in the file
             orbitdata = new orbit_str[orbitmissioncount];
-            //setup the bin reader 
+            //setup the bin reader
             BinaryReader breader = new BinaryReader(reader);
             //rtnval is set to -1 if no data or invalid data is return???
             int rtnval = 0,
@@ -371,14 +365,12 @@ namespace STK_File_selector
                         if (data.epoch_hhmmsss[i] != 0)
                         {
                             epoch_hhmmsss[i] = Convert.ToChar(data.epoch_hhmmsss[i]);
-
                         }
                         else epoch_hhmmsss[i] = '\0';
 
                         if (data.start_hhmmsss[i] != 0)
                         {
                             start_hhmmsss[i] = Convert.ToChar(data.start_hhmmsss[i]);
-
                         }
                         else start_hhmmsss[i] = '\0';
                     }
@@ -389,7 +381,6 @@ namespace STK_File_selector
                             epoch_ddmmyyyy[i] = Convert.ToChar(data.epoch_ddmmyyyy[i]);
                         }
                         else epoch_ddmmyyyy[i] = '\0';
-
 
                         if (data.start_ddmmyyyy[i] != 0)
                         {

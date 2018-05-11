@@ -28,15 +28,15 @@ namespace STK_File_selector
     {
 
         #region Class Members
-   
+
 
         private AgUiApplication m_oSTK;
         private IAgStkObjectRoot m_oApplication;
-        private int 
+        private int
             orbitmissioncount,
             stationcount,
             tlcount;
-        private string 
+        private string
             NPAS_Mask_File,
             NPAS_Orbit_File,
             NPAS_Timeline_File,
@@ -44,7 +44,7 @@ namespace STK_File_selector
             Efile_directory,
             startdate,
             enddate;
-        private bool 
+        private bool
             Tdrss_enabled,
             failure,
             groundtrack_displayed;
@@ -71,8 +71,8 @@ namespace STK_File_selector
         {
             public bool
                 efileused;
-            public int 
-                misnum, 
+            public int
+                misnum,
                 cod_id,
                 centerbody,
                 endopt,
@@ -94,7 +94,7 @@ namespace STK_File_selector
                 raan,
                 aop,
                 ma;
-            
+
             public IAgChain MisChain;
             public IAgSatellite MisSat;
             public IAgSensor Missensor;
@@ -191,8 +191,8 @@ namespace STK_File_selector
                 {
                     Console.WriteLine("Error");
                     Console.WriteLine(ex.Message);
-                    Console.WriteLine("Press any key to continue . . .");
-                    Console.ReadKey();
+                //  Console.WriteLine("Press any key to continue . . .");
+                //  Console.ReadKey();
                     Environment.Exit(0);
                 }
             }
@@ -233,7 +233,7 @@ namespace STK_File_selector
                 {
                     Console.WriteLine("Error");
                     Console.WriteLine(ex.Message);
-                    Console.WriteLine("Press any key to continue . . .");
+                    //Console.WriteLine("Press any key to continue . . .");
                     Console.ReadKey();
                     Environment.Exit(0);
                 }
@@ -247,7 +247,7 @@ namespace STK_File_selector
             {
                 Console.WriteLine("Error");
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("Press any key to continue . . .");
+                //Console.WriteLine("Press any key to continue . . .");
                 Console.ReadKey();
                 Environment.Exit(0);
             }
@@ -265,12 +265,12 @@ namespace STK_File_selector
         {
             Tmp_directory = dirname;
         }
-        
+
         public void set_efile_directory(string dirname)
         {
             Efile_directory = dirname;
         }
-        
+
         public void set_timeline_file(string filename)
         {
             NPAS_Timeline_File = filename;
@@ -383,16 +383,16 @@ namespace STK_File_selector
             try
             {
                 if (this.m_oApplication.CurrentScenario == null)
-                {//scenario doesn't exist 
+                {//scenario doesn't exist
                     this.m_oApplication.CloseScenario();
                     this.m_oApplication.NewScenario("NPAS_Schedule_to_STK");
                 }
             }catch
             {
                 find_STK();
-                
+
                 if (this.m_oApplication.CurrentScenario == null)
-                {//scenario doesn't exist 
+                {//scenario doesn't exist
                     this.m_oApplication.CloseScenario();
                     this.m_oApplication.NewScenario("NPAS_Schedule_to_STK");
                 }
@@ -461,7 +461,7 @@ namespace STK_File_selector
                 //check if the current item is checked
                 if (passed.GetItemChecked(i))
                     //look for the current check mission
-                    for (int j = 0; j < orbitmissioncount; j++) 
+                    for (int j = 0; j < orbitmissioncount; j++)
                         if (passed.Items[i].ToString() == data[j].name.ToString())
                         {
                             Console.Write("found selected mission " + data[j].name + "\n");
@@ -548,7 +548,7 @@ namespace STK_File_selector
             classical.CoordinateSystemType = AGI.STKUtil.AgECoordinateSystem.eCoordinateSystemJ2000;
             IAgCrdnEventIntervalSmartInterval interval = hpop.EphemerisInterval;
             interval.SetExplicitInterval((epochDT.ToString("dd MMM yyyy ") + "00:00:00"), (endepochDT.ToString("dd MMM yyyy ") + "00:00:00"));
-            
+
             hpop.Step = 60;
             classical.LocationType = AgEClassicalLocation.eLocationTrueAnomaly;
             IAgClassicalLocationTrueAnomaly trueAnomaly = (IAgClassicalLocationTrueAnomaly)classical.Location;
@@ -572,7 +572,7 @@ namespace STK_File_selector
 
             hpop.Propagate();
 
-            
+
         }
 
         private void groundtrack_set(IAgSatellite passedsat, bool enabled)
@@ -605,14 +605,14 @@ namespace STK_File_selector
 
         public void Orbit_generation()
         {
-            
+
             //load_orbit_file();
             scenarioCheck();
             var format = new NumberFormatInfo();
             format.NegativeSign = "-";
             format.NumberDecimalSeparator = ".";
             // planetodetic.Lat = Double.Parse(lat2[i], format);
-            
+
             for (int i = 0; i < orbitmissioncount; i++)
             {
                 //debug infomation///////
@@ -661,22 +661,9 @@ namespace STK_File_selector
                     //set the propagator type to HPOP
                     orbitdata[i].MisSat.SetPropagatorType(AGI.STKObjects.AgEVePropagatorType.ePropagatorHPOP);
 
-
-                    //orbitdata[i].MisSat.Graphics.SetAttributesType(AgEVeGfxAttributes.eAttributesCustom);
-                    //IAgVeGfxAttributesCustom intervals = orbitdata[i].MisSat.Graphics.Attributes as IAgVeGfxAttributesCustom;
-                    //IAgVeGfxIntervalsCollection customIntervals = intervals.Intervals;
-
-
-                    //AGI.STKObjects.IAgVePropagatorTwoBody twobody = (AGI.STKObjects.IAgVePropagatorTwoBody)sat.Propagator;
-
                     //TODO update below code to use sat not hpop;
                     AGI.STKObjects.IAgVePropagatorHPOP hpop = (AGI.STKObjects.IAgVePropagatorHPOP)orbitdata[i].MisSat.Propagator;
 
-                    //IAgOrbitStateClassical classical = (IAgOrbitStateClassical)hpop.InitialState.Representation.ConvertTo(AGI.STKUtil.AgEOrbitStateType.eOrbitStateClassical);
-                    //classical.Orientation.Inclination = Double.Parse(inc2[i],format);
-                    // classical.Orientation.ArgOfPerigee = Double.Parse(aop2[i], format);
-                    
-                    
                     IAgOrbitState orbit = hpop.InitialState.Representation;
                     //create the string to hold the missions epoch date & time
                     string cmb_epoch = orbitdata[i].epoch;
@@ -696,12 +683,6 @@ namespace STK_File_selector
                     {
                         endDT = Convert.ToDateTime(orbitdata[i].end_date);
                     }
-
-
-                    //classical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeRadius;
-                    /// IAgClassicalSizeShapeRadius radius = (IAgClassicalSizeShapeRadius)classical.SizeShape;
-                    // radius.PerigeeRadius = new Random().Next(6500, 45000);
-                    // radius.PerigeeRadius = new Random().Next(6500, 45000);
 
                     //hpop.ForceModel.EclipsingBodies.AssignEclipsingBody( centerbodyname);
                     //check the centerbody of the provided orbit data;
@@ -733,15 +714,18 @@ namespace STK_File_selector
                     hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), startDT.AddDays(1).ToString("dd MMM yyyy "));
                     //hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
                     hpop.InitialState.Representation.AssignClassical(AgECoordinateSystem.eCoordinateSystemJ2000, orbitdata[i].sma , orbitdata[i].ecc, orbitdata[i].inc, orbitdata[i].aop, orbitdata[i].raan, orbitdata[i].ma);
-                   
+
                     hpop.Propagate();
-                    if (orbitdata[i].centerbody == 1)
+                    //check if the orbit is earth centered and that the
+                    //     orbit start date is different from the Mission model date
+                    if (orbitdata[i].centerbody == 1 && orbitdata[i].start_date != startdate)
                     {
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
 
                         // Get the satellite's ICRF cartesian position at 180 EpSec using the data provider interface
                         IAgDataProviderGroup dpGroup = sat.DataProviders["Cartesian Position"] as IAgDataProviderGroup;
                         Array elements = new object[] { "x", "y", "z" };
+                        //***TODO*** find J2000 group instead of ICRF
                         IAgDataPrvTimeVar dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
 
                         //get the elements at the start date/time of the orbit using in NPAS
@@ -754,6 +738,7 @@ namespace STK_File_selector
 
                         // Get the satellite's ICRF cartesian velocity at 180 EpSec using the data provider interface
                         dpGroup = sat.DataProviders["Cartesian Velocity"] as IAgDataProviderGroup;
+                        //***TODO*** find J2000 group instead of ICRF
                         dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
 
                         //get the elements at the start date/time of the orbit using in NPAS
@@ -764,7 +749,6 @@ namespace STK_File_selector
                         double zvelICRF = (double)dpResult.DataSets[2].GetValues().GetValue(0);
 
                         // Create a position vector using the ICRF coordinates
-                        //IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.ICRF;
                         IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.J2000;
                         IAgCartesian3Vector vectorICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
                         vectorICRF.Set(xICRF, yICRF, zICRF);
@@ -801,7 +785,7 @@ namespace STK_File_selector
 
                     orbitdata[i].Missensor = generate_sensor(orbitdata[i].name, "Stations");
                     orbitdata[i].MisChain = generate_chain(orbitdata[i].name, "Stations", orbitdata[i].name + "_sensor");
-                     
+
                 }
                 else if (orbitdata[i].used == 1 && orbitdata[i].efileused == false)
                 {
@@ -824,12 +808,11 @@ namespace STK_File_selector
 
                     AGI.STKObjects.IAgVePropagatorStkExternal EFileProp = (AGI.STKObjects.IAgVePropagatorStkExternal)orbitdata[i].MisSat.Propagator;
 
-                    //string  = orbitdata[i].efilename.Split('\\').Last().ToString();
+                    //strip the file name from the entire director name;
                     EFileProp.Filename = (Efile_directory + orbitdata[i].efilename.Split('/').Last().ToString());
-                    
-                    //EFileProp.EphemStart = Convert.ToDateTime(startdate).ToString(format: "dd MMM yyyy");
+                    //propagate the efile orbit
                     EFileProp.Propagate();
-                    
+
                     //add new sensor to the current sat and change the sensor type to target
                     orbitdata[i].Missensor = generate_sensor(orbitdata[i].name, "Stations");
 
@@ -914,8 +897,8 @@ namespace STK_File_selector
 
             ((IAgAnimation)this.m_oApplication).Rewind();
 
-            Console.Write("Press Enter to exit application:");
-            Console.ReadLine();
+            //Console.Write("Press Enter to exit application:");
+            //Console.ReadLine();
         }
 
         //generate timeline files for the passed mission name in the codname file
@@ -953,7 +936,7 @@ namespace STK_File_selector
             //close the opened timeline file
             write.Close();
         }
-        
+
         public void Set_intervalFiles()
         {
             for (int i = 0; i < orbitmissioncount; i++)
