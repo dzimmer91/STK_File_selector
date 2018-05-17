@@ -623,7 +623,7 @@ namespace STK_File_selector
 
                     Console.Write("Misnum == cod_id\n");
 
-                    Console.Write("Mission= " + orbitdata[i].name + " " + orbitdata[i].epoch + " " + orbitdata[i].epoch_time + " ");
+                    Console.Write("Mission= " + orbitdata[i].name + "\n" + orbitdata[i].epoch + " " + orbitdata[i].epoch_time + " ");
                     Console.Write(orbitdata[i].sma + " " + orbitdata[i].ecc + " " + orbitdata[i].inc + " " + orbitdata[i].raan + " " + orbitdata[i].aop + " " + orbitdata[i].ma + "\n");
 
                     string centerbodyname;
@@ -706,10 +706,11 @@ namespace STK_File_selector
 
                     }
                     //hpop.InitialState.Representation.Assign(orbit);
-                    Console.Write("epochtime = " + epochDT.ToString("dd MMM yyyy") + orbitdata[i].epoch_time + "\n");
+                    Console.Write("set epochtime = " + epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time + "\n");
                     //set the epoch date/time from the orbit bin file
                     hpop.InitialState.Representation.Epoch = ( epochDT.ToString("dd MMM yyyy ") + orbitdata[i].epoch_time );
 
+                    Console.Write("set start/stop times = " + (startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time) + " / " + startDT.AddDays(1).ToString("dd MMM yyyy ") + "\n");
                     //only proagate the orbit 1 day from the start date/time to get the required data to convert to a Fixed coordnate system
                     hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), startDT.AddDays(1).ToString("dd MMM yyyy "));
                     //hpop.EphemerisInterval.SetStartAndStopTimes((startDT.ToString("dd MMM yyyy ") + orbitdata[i].start_time), (endDT.ToString("dd MMM yyyy ") + orbitdata[i].end_time));
@@ -720,6 +721,8 @@ namespace STK_File_selector
                     //     orbit start date is different from the Mission model date
                     if (orbitdata[i].centerbody == 1 && orbitdata[i].start_date != startdate)
                     {
+                        Console.Write("Startdate != orbit_start date converting to Cartesian elements for fixed system" + "\n");
+
                         IAgStkObject sat = m_oApplication.CurrentScenario.Children[orbitdata[i].name];
 
                         // Get the satellite's ICRF cartesian position at 180 EpSec using the data provider interface
@@ -731,6 +734,8 @@ namespace STK_File_selector
                         //get the elements at the start date/time of the orbit using in NPAS
                         IAgDrResult dpResult = dp.ExecSingleElements(hpop.StartTime, ref elements);
 
+                        Console.Write("hpop.startTime=" + hpop.StartTime + "\n");
+
 
                         double xICRF = (double)dpResult.DataSets[0].GetValues().GetValue(0);
                         double yICRF = (double)dpResult.DataSets[1].GetValues().GetValue(0);
@@ -738,6 +743,7 @@ namespace STK_File_selector
 
                         // Get the satellite's ICRF cartesian velocity at 180 EpSec using the data provider interface
                         dpGroup = sat.DataProviders["Cartesian Velocity"] as IAgDataProviderGroup;
+
                         //***TODO*** find J2000 group instead of ICRF
                         dp = dpGroup.Group["ICRF"] as IAgDataPrvTimeVar;
 
@@ -748,14 +754,20 @@ namespace STK_File_selector
                         double yvelICRF = (double)dpResult.DataSets[1].GetValues().GetValue(0);
                         double zvelICRF = (double)dpResult.DataSets[2].GetValues().GetValue(0);
 
+                        Console.Write("J2000 cartesian vectors\n");
+                        Console.Write("X=" + xICRF + " Y=" + yICRF + " Z=" + zICRF + "\n");
+                        Console.Write("Xd=" + xvelICRF + " Yd=" + yvelICRF + " Zd=" + zvelICRF + "\n");
+
                         // Create a position vector using the ICRF coordinates
-                        IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.J2000;
+                        IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.ICRF;
                         IAgCartesian3Vector vectorICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
+                        
                         vectorICRF.Set(xICRF, yICRF, zICRF);
 
                         // Create a velocity vector using the ICRF coordinates
                         IAgCartesian3Vector vectorvelICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
                         vectorvelICRF.Set(xvelICRF, yvelICRF, zvelICRF);
+                        
 
                         // Use the TransformWithRate method to transform ICRF to Fixed
                         IAgCrdnAxes axesFixed = sat.Vgt.WellKnownAxes.Earth.Fixed;
@@ -769,7 +781,9 @@ namespace STK_File_selector
                         double yvelFixed = result.Velocity.Y;
                         double zvelFixed = result.Velocity.Z;
 
-                        hpop.InitialState.Representation.AssignCartesian(AgECoordinateSystem.eCoordinateSystemFixed, xFixed, yFixed, zFixed, xvelFixed, yvelFixed, zvelFixed);
+                        Console.Write("converted cartesian vectors" + "\n");
+                        Console.Write("X=" + xFixed + " Y=" + yFixed + " Z=" + zFixed + "\n");
+                        Console.Write("Xd=" + xvelFixed + " Yd=" + yvelFixed + " Zd=" + zvelFixed + "\n");
 
                         DateTime start, stop;
                         start = Convert.ToDateTime(startdate);
@@ -778,6 +792,12 @@ namespace STK_File_selector
                         //set the epoch and start date/time to the selected scenario date/time
                         hpop.InitialState.Representation.Epoch = (start.ToString("dd MMM yyyy "));
                         hpop.EphemerisInterval.SetStartAndStopTimes((start.ToString("dd MMM yyyy ")), (stop.ToString("dd MMM yyyy ")));
+
+                        hpop.InitialState.Representation.AssignCartesian(AgECoordinateSystem.eCoordinateSystemFixed, xFixed, yFixed, zFixed, xvelFixed, yvelFixed, zvelFixed);
+
+                        hpop.InitialState.Representation.Epoch = (start.ToString("dd MMM yyyy "));
+                        hpop.EphemerisInterval.SetStartAndStopTimes((start.ToString("dd MMM yyyy ")), (stop.ToString("dd MMM yyyy ")));
+
                         //propagate new orbit
                         hpop.Propagate();
 

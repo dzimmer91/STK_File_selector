@@ -48,3 +48,4 @@ C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Debug\STK
 C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Debug\STK_File_selector.csproj.CoreCompileInputs.cache
 C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Debug\STK_File_selector.exe
 C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Debug\STK_File_selector.pdb
+C:\Users\dzimmer4\source\repos\STK_File_selector\STK_File_selector\obj\Debug\STK_File_selector.csprojResolveAssemblyReference.cache
