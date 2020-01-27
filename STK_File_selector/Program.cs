@@ -1,3 +1,5 @@
+//program.cs :
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -156,14 +158,6 @@ namespace STK_File_selector
             public int cod_id;
 
         };
-
-
-
-
-
-
-
-
 
         #endregion
 
@@ -761,13 +755,13 @@ namespace STK_File_selector
                         // Create a position vector using the ICRF coordinates
                         IAgCrdnAxes axesICRF = sat.Vgt.WellKnownAxes.Earth.ICRF;
                         IAgCartesian3Vector vectorICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
-                        
+
                         vectorICRF.Set(xICRF, yICRF, zICRF);
 
                         // Create a velocity vector using the ICRF coordinates
                         IAgCartesian3Vector vectorvelICRF = m_oApplication.ConversionUtility.NewCartesian3Vector();
                         vectorvelICRF.Set(xvelICRF, yvelICRF, zvelICRF);
-                        
+
 
                         // Use the TransformWithRate method to transform ICRF to Fixed
                         IAgCrdnAxes axesFixed = sat.Vgt.WellKnownAxes.Earth.Fixed;

@@ -1,3 +1,5 @@
+//CATT_Display.cs:
+  
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,9 +19,9 @@ namespace STK_File_selector
 
         public NPAS_to_STK()
         {
-            
+
             InitializeComponent();
-            
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -101,7 +103,7 @@ namespace STK_File_selector
         private void Run_PB_Click(object sender, EventArgs e)
         {
             //catl_data_transfer.set_tdrs_enabled(tdrscheckBox.Checked);
-            
+
             catl_data_transfer.set_startenddates(this.StartdateTimePicker.Text, this.EnddateTimePicker.Text);
             catl_data_transfer.process_mission_data(this.checkedListBox1);
             catl_data_transfer.process_station_data(this.checkedListBox2);

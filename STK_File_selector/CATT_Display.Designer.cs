@@ -1,3 +1,4 @@
+//CATT_Display.Designer.cs
 ﻿namespace STK_File_selector
 {
     partial class NPAS_to_STK
@@ -52,9 +53,9 @@
             this.groundtrack_CB = new System.Windows.Forms.CheckBox();
             this.Options_LB = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
+            //
             // getMaskFile_PB
-            // 
+            //
             this.getMaskFile_PB.Location = new System.Drawing.Point(10, 87);
             this.getMaskFile_PB.Name = "getMaskFile_PB";
             this.getMaskFile_PB.Size = new System.Drawing.Size(99, 23);
@@ -62,9 +63,9 @@
             this.getMaskFile_PB.Text = "Select Mask File";
             this.getMaskFile_PB.UseVisualStyleBackColor = true;
             this.getMaskFile_PB.Click += new System.EventHandler(this.Get_File_Btn_Click);
-            // 
+            //
             // Exit_Btn
-            // 
+            //
             this.Exit_Btn.Location = new System.Drawing.Point(466, 478);
             this.Exit_Btn.Name = "Exit_Btn";
             this.Exit_Btn.Size = new System.Drawing.Size(75, 23);
@@ -72,25 +73,25 @@
             this.Exit_Btn.Text = "Exit";
             this.Exit_Btn.UseVisualStyleBackColor = true;
             this.Exit_Btn.Click += new System.EventHandler(this.Exit_Btn_Click);
-            // 
+            //
             // textBox1
-            // 
+            //
             this.textBox1.Location = new System.Drawing.Point(115, 86);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(436, 20);
             this.textBox1.TabIndex = 3;
-            // 
+            //
             // textBox2
-            // 
+            //
             this.textBox2.Location = new System.Drawing.Point(115, 112);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(436, 20);
             this.textBox2.TabIndex = 5;
-            // 
+            //
             // getOrbFile_PB
-            // 
+            //
             this.getOrbFile_PB.Location = new System.Drawing.Point(10, 113);
             this.getOrbFile_PB.Name = "getOrbFile_PB";
             this.getOrbFile_PB.Size = new System.Drawing.Size(99, 23);
@@ -98,9 +99,9 @@
             this.getOrbFile_PB.Text = "Select Orbit File";
             this.getOrbFile_PB.UseVisualStyleBackColor = true;
             this.getOrbFile_PB.Click += new System.EventHandler(this.button2_Click);
-            // 
+            //
             // TLFile_PB
-            // 
+            //
             this.TLFile_PB.Location = new System.Drawing.Point(10, 58);
             this.TLFile_PB.Name = "TLFile_PB";
             this.TLFile_PB.Size = new System.Drawing.Size(100, 23);
@@ -108,17 +109,17 @@
             this.TLFile_PB.Text = "Select TL File";
             this.TLFile_PB.UseVisualStyleBackColor = true;
             this.TLFile_PB.Click += new System.EventHandler(this.TLFile_PB_Click);
-            // 
+            //
             // TLFile_TB
-            // 
+            //
             this.TLFile_TB.Location = new System.Drawing.Point(116, 59);
             this.TLFile_TB.Name = "TLFile_TB";
             this.TLFile_TB.ReadOnly = true;
             this.TLFile_TB.Size = new System.Drawing.Size(435, 20);
             this.TLFile_TB.TabIndex = 8;
-            // 
+            //
             // Run_PB
-            // 
+            //
             this.Run_PB.Location = new System.Drawing.Point(11, 195);
             this.Run_PB.Name = "Run_PB";
             this.Run_PB.Size = new System.Drawing.Size(75, 23);
@@ -126,25 +127,25 @@
             this.Run_PB.Text = "Build Lists";
             this.Run_PB.UseVisualStyleBackColor = true;
             this.Run_PB.Click += new System.EventHandler(this.Run_PB_Click);
-            // 
+            //
             // checkedListBox1
-            // 
+            //
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Location = new System.Drawing.Point(11, 248);
             this.checkedListBox1.Name = "checkedListBox1";
             this.checkedListBox1.Size = new System.Drawing.Size(169, 169);
             this.checkedListBox1.TabIndex = 10;
-            // 
+            //
             // checkedListBox2
-            // 
+            //
             this.checkedListBox2.FormattingEnabled = true;
             this.checkedListBox2.Location = new System.Drawing.Point(227, 248);
             this.checkedListBox2.Name = "checkedListBox2";
             this.checkedListBox2.Size = new System.Drawing.Size(155, 169);
             this.checkedListBox2.TabIndex = 11;
-            // 
+            //
             // missionLB
-            // 
+            //
             this.missionLB.AutoSize = true;
             this.missionLB.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.missionLB.Location = new System.Drawing.Point(49, 225);
@@ -152,9 +153,9 @@
             this.missionLB.Size = new System.Drawing.Size(62, 17);
             this.missionLB.TabIndex = 12;
             this.missionLB.Text = "Missions";
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.label1.Location = new System.Drawing.Point(274, 225);
@@ -162,9 +163,9 @@
             this.label1.Size = new System.Drawing.Size(59, 17);
             this.label1.TabIndex = 13;
             this.label1.Text = "Stations";
-            // 
+            //
             // Submit_pb
-            // 
+            //
             this.Submit_pb.Location = new System.Drawing.Point(10, 479);
             this.Submit_pb.Name = "Submit_pb";
             this.Submit_pb.Size = new System.Drawing.Size(75, 23);
@@ -172,9 +173,9 @@
             this.Submit_pb.Text = "Submit";
             this.Submit_pb.UseVisualStyleBackColor = true;
             this.Submit_pb.Click += new System.EventHandler(this.Submit_pb_Click);
-            // 
+            //
             // button1
-            // 
+            //
             this.button1.Location = new System.Drawing.Point(11, 32);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(99, 23);
@@ -182,54 +183,54 @@
             this.button1.Text = "Select TMP Dir";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
+            //
             // tmp_dir_tb
-            // 
+            //
             this.tmp_dir_tb.AcceptsReturn = true;
             this.tmp_dir_tb.Location = new System.Drawing.Point(116, 34);
             this.tmp_dir_tb.Name = "tmp_dir_tb";
             this.tmp_dir_tb.ReadOnly = true;
             this.tmp_dir_tb.Size = new System.Drawing.Size(435, 20);
             this.tmp_dir_tb.TabIndex = 16;
-            // 
+            //
             // label2
-            // 
+            //
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(11, 171);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
             this.label2.TabIndex = 17;
             this.label2.Text = "Start Date";
-            // 
+            //
             // StartdateTimePicker
-            // 
+            //
             this.StartdateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.StartdateTimePicker.Location = new System.Drawing.Point(72, 169);
             this.StartdateTimePicker.Name = "StartdateTimePicker";
             this.StartdateTimePicker.Size = new System.Drawing.Size(96, 20);
             this.StartdateTimePicker.TabIndex = 18;
             this.StartdateTimePicker.Value = new System.DateTime(2017, 12, 12, 0, 0, 0, 0);
-            // 
+            //
             // label3
-            // 
+            //
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(187, 171);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 13);
             this.label3.TabIndex = 19;
             this.label3.Text = "End Date";
-            // 
+            //
             // EnddateTimePicker
-            // 
+            //
             this.EnddateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.EnddateTimePicker.Location = new System.Drawing.Point(245, 169);
             this.EnddateTimePicker.Name = "EnddateTimePicker";
             this.EnddateTimePicker.Size = new System.Drawing.Size(96, 20);
             this.EnddateTimePicker.TabIndex = 20;
             this.EnddateTimePicker.Value = new System.DateTime(2017, 12, 12, 0, 0, 0, 0);
-            // 
+            //
             // EfileBTN
-            // 
+            //
             this.EfileBTN.Location = new System.Drawing.Point(10, 140);
             this.EfileBTN.Name = "EfileBTN";
             this.EfileBTN.Size = new System.Drawing.Size(99, 23);
@@ -237,17 +238,17 @@
             this.EfileBTN.Text = "Select E File Dir";
             this.EfileBTN.UseVisualStyleBackColor = true;
             this.EfileBTN.Click += new System.EventHandler(this.EfileBTN_Click);
-            // 
+            //
             // EFileTB
-            // 
+            //
             this.EFileTB.Location = new System.Drawing.Point(116, 138);
             this.EFileTB.Name = "EFileTB";
             this.EFileTB.ReadOnly = true;
             this.EFileTB.Size = new System.Drawing.Size(436, 20);
             this.EFileTB.TabIndex = 22;
-            // 
+            //
             // groundtrack_CB
-            // 
+            //
             this.groundtrack_CB.AutoSize = true;
             this.groundtrack_CB.Location = new System.Drawing.Point(429, 248);
             this.groundtrack_CB.Name = "groundtrack_CB";
@@ -255,18 +256,18 @@
             this.groundtrack_CB.TabIndex = 23;
             this.groundtrack_CB.Text = "Ground Track";
             this.groundtrack_CB.UseVisualStyleBackColor = true;
-            // 
+            //
             // Options_LB
-            // 
+            //
             this.Options_LB.AutoSize = true;
             this.Options_LB.Location = new System.Drawing.Point(429, 225);
             this.Options_LB.Name = "Options_LB";
             this.Options_LB.Size = new System.Drawing.Size(43, 13);
             this.Options_LB.TabIndex = 24;
             this.Options_LB.Text = "Options";
-            // 
+            //
             // NPAS_to_STK
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(618, 513);
@@ -332,4 +333,3 @@
 
 
 }
-
